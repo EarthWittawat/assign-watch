@@ -61,7 +61,21 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 3. Select the `manifest.json` file inside the extracted folder.
 
 > [!WARNING]
+>
 > **Firefox Limitation:** Extensions installed via "Load Temporary Add-on" will be removed when you close or restart Firefox. For permanent usage, please install via the Firefox Add-ons store link above.
+
+#### For Safari
+
+1. Run `pnpm build:safari` (or extract `.output/assign-watch-*-safari.zip` or `.output/safari-mv2`).
+2. Package the extension into a native Safari extension app using Xcode's converter CLI tool:
+   ```bash
+   xcrun safari-web-extension-converter .output/safari-mv2
+   ```
+3. Follow the instructions in Xcode to run the app and enable the extension under **Safari > Settings > Extensions**.
+
+> [!NOTE]
+>
+> Safari extensions require a native macOS/iOS app wrapper created via Xcode CLI (`safari-web-extension-converter`). See the [WXT Safari Guide](https://wxt.dev/guide/essentials/publishing.html#safari) for details.
 
 ## Development
 
@@ -93,6 +107,9 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 
    # For Firefox
    pnpm dev:firefox
+
+   # For Safari
+   pnpm dev:safari
    ```
 
 4. Build for production
@@ -103,6 +120,9 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 
    # For Firefox
    pnpm build:firefox
+
+   # For Safari
+   pnpm build:safari
    ```
 
 ## Contributing
