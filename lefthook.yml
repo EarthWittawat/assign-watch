@@ -4,7 +4,14 @@ commit-msg:
       run: pnpm commitlint --edit {1}
 
 pre-commit:
-  commands:
-    ultracite-check:
-      glob: "*.{js,ts,jsx,tsx,json,jsonc,css}"
-      run: pnpm ultracite check {staged_files}
+  jobs:
+    - run: pnpm ultracite fix
+      glob:
+        - "**/*.js"
+        - "**/*.jsx"
+        - "**/*.ts"
+        - "**/*.tsx"
+        - "**/*.json"
+        - "**/*.jsonc"
+        - "**/*.css"
+      stage_fixed: true
