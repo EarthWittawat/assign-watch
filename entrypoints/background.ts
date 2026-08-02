@@ -2,7 +2,7 @@ import { browser } from "wxt/browser";
 import { defineBackground } from "wxt/utils/define-background";
 
 import { fetchAssignments } from "@/lib/api";
-import { getAssignmentUrl, getSubmissionStatus } from "@/lib/assignment";
+import { getAssignmentUrl, isSubmitted } from "@/lib/assignment";
 import {
   classInfoStorage,
   notifiedAssignments1hStorage,
@@ -53,11 +53,9 @@ function reviewAssignment(
   state: NotifiedState,
   now: Date
 ) {
-  const status = getSubmissionStatus(assignment);
-  const isSubmitted = status === "submitted" || status === "submitted_late";
   const dueDate = new Date(assignment.due_date);
 
-  if (isSubmitted || dueDate <= now) {
+  if (isSubmitted(assignment) || dueDate <= now) {
     state.changedDay = state.idsDay.delete(assignment.id) || state.changedDay;
     state.changedHour =
       state.idsHour.delete(assignment.id) || state.changedHour;

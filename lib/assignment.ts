@@ -23,6 +23,12 @@ export function getSubmissionStatus(assignment: Activity): Status {
   return "in_progress";
 }
 
+/** Excludes `quiz_not_submitted` — answered but never finalised, so still to do. */
+export function isSubmitted(assignment: Activity) {
+  const status = getSubmissionStatus(assignment);
+  return status === "submitted" || status === "submitted_late";
+}
+
 export function getAssignmentUrl(
   assignment: Pick<Activity, "type" | "class_id" | "id">
 ) {

@@ -1,12 +1,12 @@
 import { isToday } from "date-fns";
 
 import { CalendarAssignmentChip } from "@/components/calendar-assignment-chip";
-import type { DayAssignments } from "@/components/calendar-types";
 import { formatDate } from "@/lib/date";
+import type { DayEntry } from "@/lib/group-assignments";
 import { cn } from "@/lib/utils";
 
 interface CalendarWeekViewProps {
-  days: DayAssignments[];
+  days: DayEntry[];
   getClassTitle: (classId: number) => string | undefined;
 }
 

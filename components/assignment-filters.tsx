@@ -11,28 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FILTER_KEYS } from "@/lib/preferences";
+import type { FilterState } from "@/lib/preferences";
 import { cn } from "@/lib/utils";
-
-export interface FilterState {
-  assignmentType: {
-    assignment: boolean;
-    quiz: boolean;
-  };
-  groupType: {
-    individual: boolean;
-    group: boolean;
-  };
-  submissionStatus: {
-    submitted: boolean;
-    notSubmitted: boolean;
-  };
-}
-
-const VALID_KEYS: { [K in keyof FilterState]: (keyof FilterState[K])[] } = {
-  assignmentType: ["assignment", "quiz"],
-  groupType: ["individual", "group"],
-  submissionStatus: ["submitted", "notSubmitted"],
-};
 
 interface AssignmentFiltersProps {
   filters: FilterState;
@@ -49,7 +30,7 @@ export function AssignmentFilters({
     value: boolean
   ) => {
     const categoryFilters = filters[category];
-    const validKeys = VALID_KEYS[category];
+    const validKeys = FILTER_KEYS[category];
     const otherKeys = validKeys.filter((k) => k !== key);
 
     if (!value && otherKeys.every((k) => !categoryFilters[k])) {
@@ -76,7 +57,7 @@ export function AssignmentFilters({
     key: keyof FilterState[T]
   ) => {
     const categoryFilters = filters[category];
-    const validKeys = VALID_KEYS[category];
+    const validKeys = FILTER_KEYS[category];
     return (
       categoryFilters[key] &&
       validKeys.filter((k) => k !== key).every((k) => !categoryFilters[k])

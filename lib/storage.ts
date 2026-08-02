@@ -1,8 +1,17 @@
 import { storage } from "wxt/utils/storage";
 
-import type { FilterState } from "@/components/assignment-filters";
-import type { GroupState } from "@/components/assignment-group";
-import type { SortState } from "@/components/assignment-sort";
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_GROUP,
+  DEFAULT_SHOW_CALENDAR_BY,
+  DEFAULT_SORT,
+} from "@/lib/preferences";
+import type {
+  FilterState,
+  GroupState,
+  ShowCalendarBy,
+  SortState,
+} from "@/lib/preferences";
 import type { ClassInfo } from "@/types";
 
 export const hiddenClassesStorage = storage.defineItem<number[]>(
@@ -22,48 +31,28 @@ export const hiddenAssignmentsStorage = storage.defineItem<number[]>(
 export const filtersStorage = storage.defineItem<FilterState>(
   "local:assignmentFilters",
   {
-    fallback: {
-      assignmentType: {
-        assignment: true,
-        quiz: true,
-      },
-      groupType: {
-        group: true,
-        individual: true,
-      },
-      submissionStatus: {
-        notSubmitted: true,
-        submitted: true,
-      },
-    },
+    fallback: DEFAULT_FILTERS,
   }
 );
 
 export const sortStorage = storage.defineItem<SortState>(
   "local:assignmentSort",
   {
-    fallback: {
-      direction: "asc",
-      sortBy: "dueDate",
-    },
+    fallback: DEFAULT_SORT,
   }
 );
 
 export const groupStorage = storage.defineItem<GroupState>(
   "local:assignmentGroup",
   {
-    fallback: {
-      groupBy: "class",
-    },
+    fallback: DEFAULT_GROUP,
   }
 );
-
-export type ShowCalendarBy = "month" | "week";
 
 export const showCalendarByStorage = storage.defineItem<ShowCalendarBy>(
   "local:showCalendarBy",
   {
-    fallback: "month",
+    fallback: DEFAULT_SHOW_CALENDAR_BY,
   }
 );
 

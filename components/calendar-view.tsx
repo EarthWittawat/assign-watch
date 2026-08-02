@@ -4,7 +4,6 @@ import {
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
-  isSameDay,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -17,26 +16,19 @@ import { CalendarWeekView } from "@/components/calendar-week-view";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate } from "@/lib/date";
+import { groupByDay } from "@/lib/group-assignments";
+import type { ShowCalendarBy } from "@/lib/preferences";
 import { showCalendarByStorage } from "@/lib/storage";
-import type { ShowCalendarBy } from "@/lib/storage";
 import { useStorageState } from "@/lib/use-storage-state";
-import type { Activity, ClassInfo } from "@/types";
+import type { VisibleAssignment } from "@/lib/visible-assignments";
 
 const WEEK_STARTS_ON_SUNDAY = { weekStartsOn: 0 } as const;
 
 interface CalendarViewProps {
-  allAssignments: (Activity[] | undefined)[];
-  allClassInfo: ClassInfo[];
-  applyFilters: (assignment: Activity) => boolean;
-  hiddenAssignments: number[];
+  assignments: VisibleAssignment[];
 }
 
-export function CalendarView({
-  allClassInfo,
-  allAssignments,
-  hiddenAssignments,
-  applyFilters,
-}: CalendarViewProps) {
+export function CalendarView({ assignments }: CalendarViewProps) {
   const [showCalendarBy, setShowCalendarBy] = useStorageState(
     showCalendarByStorage
   );
@@ -65,45 +57,13 @@ export function CalendarView({
     start: calendarStart,
   });
 
-  const hiddenAssignmentIds = new Set(hiddenAssignments);
-  const getAssignmentsForRange = (start: Date, end: Date) =>
-    allAssignments.flat().filter((assignment): assignment is Activity => {
-      if (!assignment) {
-        return false;
-      }
-      if (hiddenAssignmentIds.has(assignment.id)) {
-        return false;
-      }
-      if (!applyFilters(assignment)) {
-        return false;
-      }
+  const assignmentsByDayWeek = groupByDay(assignments, daysInWeek);
+  const assignmentsByDayMonth = groupByDay(assignments, daysInMonth);
 
-      const dueDate = new Date(assignment.due_date);
-      return dueDate >= start && dueDate <= end;
-    });
-
-  const thisWeekAssignments = getAssignmentsForRange(weekStart, weekEnd);
-  const thisMonthAssignments = getAssignmentsForRange(
-    calendarStart,
-    calendarEnd
+  const classTitles = new Map(
+    assignments.map(({ classInfo }) => [classInfo.id, classInfo.title])
   );
-
-  const assignmentsByDayWeek = daysInWeek.map((day) => ({
-    assignments: thisWeekAssignments.filter((assignment) =>
-      isSameDay(new Date(assignment.due_date), day)
-    ),
-    day,
-  }));
-
-  const assignmentsByDayMonth = daysInMonth.map((day) => ({
-    assignments: thisMonthAssignments.filter((assignment) =>
-      isSameDay(new Date(assignment.due_date), day)
-    ),
-    day,
-  }));
-
-  const getClassTitle = (classId: number) =>
-    allClassInfo.find((c) => c.id === classId)?.title ?? undefined;
+  const getClassTitle = (classId: number) => classTitles.get(classId);
 
   const weekRangeLabel =
     formatDate(weekStart, "M") === formatDate(weekEnd, "M")

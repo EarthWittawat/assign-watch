@@ -1,12 +1,8 @@
-import type { FilterState } from "@/components/assignment-filters";
-import type { SortState } from "@/components/assignment-sort";
-import { getSubmissionStatus } from "@/lib/assignment";
-import type { Activity, ClassInfo } from "@/types";
+import { isSameDay } from "date-fns";
 
-export interface FilteredAssignment {
-  assignment: Activity;
-  classInfo: ClassInfo;
-}
+import type { SortState } from "@/lib/preferences";
+import type { VisibleAssignment } from "@/lib/visible-assignments";
+import type { Activity, ClassInfo } from "@/types";
 
 export interface ClassGroup {
   assignments: Activity[];
@@ -18,34 +14,9 @@ export interface DateGroupEntry {
   date: string;
 }
 
-export function passesFilters(assignment: Activity, filters: FilterState) {
-  const status = getSubmissionStatus(assignment);
-
-  const isSubmitted = status === "submitted" || status === "submitted_late";
-  if (isSubmitted && !filters.submissionStatus.submitted) {
-    return false;
-  }
-  if (!(isSubmitted || filters.submissionStatus.notSubmitted)) {
-    return false;
-  }
-
-  const isAssignment = assignment.type === "ASM";
-  if (isAssignment && !filters.assignmentType.assignment) {
-    return false;
-  }
-  if (!(isAssignment || filters.assignmentType.quiz)) {
-    return false;
-  }
-
-  const isIndividual = assignment.group_type === "IND";
-  if (isIndividual && !filters.groupType.individual) {
-    return false;
-  }
-  if (!(isIndividual || filters.groupType.group)) {
-    return false;
-  }
-
-  return true;
+export interface DayEntry {
+  assignments: Activity[];
+  day: Date;
 }
 
 export function sortAssignments(assignments: Activity[], sortState: SortState) {
@@ -57,54 +28,8 @@ export function sortAssignments(assignments: Activity[], sortState: SortState) {
   });
 }
 
-interface CollectParams {
-  allClassInfo: ClassInfo[];
-  data: (Activity[] | undefined)[];
-  filters: FilterState;
-  hiddenAssignments: number[];
-  hiddenClasses: number[];
-}
-
-/** Flatten per-class query results into a single filtered list. */
-export function collectAssignments({
-  data,
-  allClassInfo,
-  hiddenClasses,
-  hiddenAssignments,
-  filters,
-}: CollectParams): FilteredAssignment[] {
-  const collected: FilteredAssignment[] = [];
-  const hiddenClassIds = new Set(hiddenClasses);
-  const hiddenAssignmentIds = new Set(hiddenAssignments);
-
-  for (const [index, query] of data.entries()) {
-    const classInfo = allClassInfo[index];
-    if (hiddenClassIds.has(classInfo.id) || !query?.length) {
-      continue;
-    }
-
-    for (const assignment of query) {
-      // Skip assignments that are both past due and already submitted.
-      const status = getSubmissionStatus(assignment);
-      const isSubmitted = status === "submitted" || status === "submitted_late";
-      if (assignment.due_date_exceed && isSubmitted) {
-        continue;
-      }
-      if (hiddenAssignmentIds.has(assignment.id)) {
-        continue;
-      }
-      if (!passesFilters(assignment, filters)) {
-        continue;
-      }
-      collected.push({ assignment, classInfo });
-    }
-  }
-
-  return collected;
-}
-
 export function groupByClass(
-  items: FilteredAssignment[],
+  items: VisibleAssignment[],
   sortState: SortState
 ): ClassGroup[] {
   const groups = new Map<number, ClassGroup>();
@@ -125,7 +50,7 @@ export function groupByClass(
 }
 
 export function groupByDueDate(
-  items: FilteredAssignment[],
+  items: VisibleAssignment[],
   sortState: SortState
 ): DateGroupEntry[] {
   const sorted = sortAssignments(
@@ -150,4 +75,21 @@ export function groupByDueDate(
       return sortState.direction === "asc" ? comparison : -comparison;
     })
     .map(([date, assignments]) => ({ assignments, date }));
+}
+
+export function groupByDay(
+  items: VisibleAssignment[],
+  days: Date[]
+): DayEntry[] {
+  const buckets = new Map<number, Activity[]>(days.map((day) => [+day, []]));
+
+  for (const { assignment } of items) {
+    const dueDate = new Date(assignment.due_date);
+    const day = days.find((candidate) => isSameDay(dueDate, candidate));
+    if (day) {
+      buckets.get(+day)?.push(assignment);
+    }
+  }
+
+  return days.map((day) => ({ assignments: buckets.get(+day) ?? [], day }));
 }

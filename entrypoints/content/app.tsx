@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import { Calendar, LayoutList } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { i18n } from "#imports";
 import { AssignmentFilters } from "@/components/assignment-filters";
@@ -22,12 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAssignments } from "@/lib/api";
 import { scrapeClassCards, scrapeUserId } from "@/lib/dom";
-import {
-  collectAssignments,
-  groupByClass,
-  groupByDueDate,
-  passesFilters,
-} from "@/lib/group-assignments";
+import { groupByClass, groupByDueDate } from "@/lib/group-assignments";
 import {
   classInfoStorage,
   filtersStorage,
@@ -38,7 +33,7 @@ import {
   userIdStorage,
 } from "@/lib/storage";
 import { useStorageState } from "@/lib/use-storage-state";
-import type { Activity } from "@/types";
+import { visibleAssignments } from "@/lib/visible-assignments";
 
 function navigateToClassPage() {
   sessionStorage.setItem("shouldOpenDialog", "true");
@@ -133,10 +128,22 @@ function App() {
     })),
   });
 
-  const applyFilters = useCallback(
-    (assignment: Activity) => passesFilters(assignment, filters),
-    [filters]
-  );
+  const visibility = {
+    allClassInfo,
+    data: assignments.data,
+    filters,
+    hiddenAssignments,
+    hiddenClasses,
+  };
+
+  const listItems = visibleAssignments({
+    ...visibility,
+    includeSettled: false,
+  });
+  const calendarItems = visibleAssignments({
+    ...visibility,
+    includeSettled: true,
+  });
 
   const renderList = () => {
     if (assignments.pending) {
@@ -145,20 +152,12 @@ function App() {
       ));
     }
 
-    const items = collectAssignments({
-      allClassInfo,
-      data: assignments.data,
-      filters,
-      hiddenAssignments,
-      hiddenClasses,
-    });
-
-    if (items.length === 0) {
+    if (listItems.length === 0) {
       return <NoAssignments />;
     }
 
     if (groupState.groupBy === "class") {
-      return groupByClass(items, sortState).map((group) => (
+      return groupByClass(listItems, sortState).map((group) => (
         <Class
           assignments={group.assignments}
           classInfo={group.classInfo}
@@ -168,7 +167,7 @@ function App() {
     }
 
     const classInfoMap = new Map(allClassInfo.map((c) => [c.id, c]));
-    return groupByDueDate(items, sortState).map(
+    return groupByDueDate(listItems, sortState).map(
       ({ date, assignments: due }) => (
         <DateGroup
           assignments={due}
@@ -242,12 +241,7 @@ function App() {
             </TabsContent>
             <TabsContent value="calendar">
               <div className="h-[75dvh]">
-                <CalendarView
-                  allAssignments={assignments.data}
-                  allClassInfo={allClassInfo}
-                  applyFilters={applyFilters}
-                  hiddenAssignments={hiddenAssignments}
-                />
+                <CalendarView assignments={calendarItems} />
               </div>
             </TabsContent>
           </Tabs>

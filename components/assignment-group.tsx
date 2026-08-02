@@ -11,12 +11,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-export type GroupOption = "class" | "dueDate";
-
-export interface GroupState {
-  groupBy: GroupOption;
-}
+import type { GroupOption, GroupState } from "@/lib/preferences";
 
 interface AssignmentGroupProps {
   groupState: GroupState;

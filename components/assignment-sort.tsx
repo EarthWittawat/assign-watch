@@ -12,15 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-export type SortOption = "postedDate" | "dueDate";
-
-export type SortDirection = "asc" | "desc";
-
-export interface SortState {
-  direction: SortDirection;
-  sortBy: SortOption;
-}
+import type { SortDirection, SortOption, SortState } from "@/lib/preferences";
 
 interface AssignmentSortProps {
   onSortChange: (sortState: SortState) => void;

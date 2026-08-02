@@ -2,13 +2,13 @@ import { isSameMonth, isToday } from "date-fns";
 
 import { i18n } from "#imports";
 import { CalendarAssignmentChip } from "@/components/calendar-assignment-chip";
-import type { DayAssignments } from "@/components/calendar-types";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatDate } from "@/lib/date";
+import type { DayEntry } from "@/lib/group-assignments";
 import { cn } from "@/lib/utils";
 
 const DAYS_PER_WEEK = 7;
@@ -17,7 +17,7 @@ const CROWDED_WEEK_COUNT = 5;
 const CHIPS_PER_CROWDED_DAY = 2;
 const CHIPS_PER_DAY = 3;
 
-interface CalendarMonthDayProps extends DayAssignments {
+interface CalendarMonthDayProps extends DayEntry {
   currentMonth: Date;
   getClassTitle: (classId: number) => string | undefined;
   isLastColumn: boolean;
@@ -91,7 +91,7 @@ function CalendarMonthDay({
 
 interface CalendarMonthViewProps {
   currentMonth: Date;
-  days: DayAssignments[];
+  days: DayEntry[];
   getClassTitle: (classId: number) => string | undefined;
   weekdays: Date[];
 }
@@ -102,7 +102,7 @@ export function CalendarMonthView({
   getClassTitle,
   weekdays,
 }: CalendarMonthViewProps) {
-  const weeks: DayAssignments[][] = [];
+  const weeks: DayEntry[][] = [];
   for (let i = 0; i < days.length; i += DAYS_PER_WEEK) {
     weeks.push(days.slice(i, i + DAYS_PER_WEEK));
   }
