@@ -18,7 +18,6 @@ export interface DateGroupEntry {
   date: string;
 }
 
-/** Whether an assignment passes the active submission/type/group filters. */
 export function passesFilters(assignment: Activity, filters: FilterState) {
   const status = getSubmissionStatus(assignment);
 
@@ -51,7 +50,7 @@ export function passesFilters(assignment: Activity, filters: FilterState) {
 
 export function sortAssignments(assignments: Activity[], sortState: SortState) {
   const field = sortState.sortBy === "postedDate" ? "start_date" : "due_date";
-  return [...assignments].sort((a, b) => {
+  return assignments.toSorted((a, b) => {
     const comparison =
       new Date(a[field]).getTime() - new Date(b[field]).getTime();
     return sortState.direction === "asc" ? comparison : -comparison;
@@ -75,11 +74,13 @@ export function collectAssignments({
   filters,
 }: CollectParams): FilteredAssignment[] {
   const collected: FilteredAssignment[] = [];
+  const hiddenClassIds = new Set(hiddenClasses);
+  const hiddenAssignmentIds = new Set(hiddenAssignments);
 
-  data.forEach((query, index) => {
+  for (const [index, query] of data.entries()) {
     const classInfo = allClassInfo[index];
-    if (hiddenClasses.includes(classInfo.id) || !query?.length) {
-      return;
+    if (hiddenClassIds.has(classInfo.id) || !query?.length) {
+      continue;
     }
 
     for (const assignment of query) {
@@ -89,7 +90,7 @@ export function collectAssignments({
       if (assignment.due_date_exceed && isSubmitted) {
         continue;
       }
-      if (hiddenAssignments.includes(assignment.id)) {
+      if (hiddenAssignmentIds.has(assignment.id)) {
         continue;
       }
       if (!passesFilters(assignment, filters)) {
@@ -97,7 +98,7 @@ export function collectAssignments({
       }
       collected.push({ assignment, classInfo });
     }
-  });
+  }
 
   return collected;
 }
@@ -111,13 +112,13 @@ export function groupByClass(
   for (const { assignment, classInfo } of items) {
     let group = groups.get(classInfo.id);
     if (!group) {
-      group = { classInfo, assignments: [] };
+      group = { assignments: [], classInfo };
       groups.set(classInfo.id, group);
     }
     group.assignments.push(assignment);
   }
 
-  return Array.from(groups.values()).map((group) => ({
+  return [...groups.values()].map((group) => ({
     ...group,
     assignments: sortAssignments(group.assignments, sortState),
   }));
@@ -134,7 +135,7 @@ export function groupByDueDate(
 
   const groups = new Map<string, Activity[]>();
   for (const assignment of sorted) {
-    const dateKey = new Date(assignment.due_date).toISOString().split("T")[0];
+    const [dateKey] = new Date(assignment.due_date).toISOString().split("T");
     const bucket = groups.get(dateKey);
     if (bucket) {
       bucket.push(assignment);
@@ -143,10 +144,10 @@ export function groupByDueDate(
     }
   }
 
-  return Array.from(groups.entries())
-    .sort(([a], [b]) => {
+  return [...groups.entries()]
+    .toSorted(([a], [b]) => {
       const comparison = new Date(a).getTime() - new Date(b).getTime();
       return sortState.direction === "asc" ? comparison : -comparison;
     })
-    .map(([date, assignments]) => ({ date, assignments }));
+    .map(([date, assignments]) => ({ assignments, date }));
 }

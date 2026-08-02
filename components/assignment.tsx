@@ -11,6 +11,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+
 import { i18n } from "#imports";
 import { StatusBadge } from "@/components/status-badge";
 import {
@@ -38,31 +39,29 @@ interface AssignmentProps {
 
 function SubmissionStatusBadge({ assignment }: { assignment: Activity }) {
   const status = getSubmissionStatus(assignment);
-  const color =
-    status === "submitted"
-      ? "green"
-      : status === "quiz_not_submitted"
-        ? "amber"
-        : "red";
-  const icon =
-    status === "submitted" ? (
-      <CircleCheckBig />
-    ) : status === "quiz_not_submitted" ? (
-      <CircleAlert />
-    ) : (
-      <CircleX />
+
+  if (status === "submitted") {
+    return (
+      <StatusBadge color="green">
+        <CircleCheckBig />
+        {i18n.t("submitted")}
+      </StatusBadge>
     );
-  const label =
-    status === "submitted"
-      ? i18n.t("submitted")
-      : status === "quiz_not_submitted"
-        ? i18n.t("done_not_submitted_yet")
-        : i18n.t("not_submitted");
+  }
+
+  if (status === "quiz_not_submitted") {
+    return (
+      <StatusBadge color="amber">
+        <CircleAlert />
+        {i18n.t("done_not_submitted_yet")}
+      </StatusBadge>
+    );
+  }
 
   return (
-    <StatusBadge color={color}>
-      {icon}
-      {label}
+    <StatusBadge color="red">
+      <CircleX />
+      {i18n.t("not_submitted")}
     </StatusBadge>
   );
 }

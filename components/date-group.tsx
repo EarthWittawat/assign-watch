@@ -1,4 +1,5 @@
 import { isToday, isTomorrow } from "date-fns";
+
 import { i18n } from "#imports";
 import { Assignment } from "@/components/assignment";
 import { StatusBadge } from "@/components/status-badge";
@@ -15,20 +16,20 @@ interface DateGroupProps {
 
 export function DateGroup({ date, assignments, classInfoMap }: DateGroupProps) {
   const dateObj = new Date(date);
-  const formattedDate = formatDate(dateObj, "d MMMM yyyy");
   const relative = formatDateRelative(dateObj);
+
+  let dateLabel = formatDate(dateObj, "d MMMM yyyy");
+  if (isToday(dateObj)) {
+    dateLabel = i18n.t("today");
+  } else if (isTomorrow(dateObj)) {
+    dateLabel = i18n.t("tomorrow");
+  }
 
   return (
     <div className="flex gap-3">
       <div className="w-48 rounded-lg bg-muted p-4">
         <div className={cn(assignments.length > 1 && "sticky top-4")}>
-          <div className="font-medium text-lg">
-            {isToday(dateObj)
-              ? i18n.t("today")
-              : isTomorrow(dateObj)
-                ? i18n.t("tomorrow")
-                : formattedDate}
-          </div>
+          <div className="font-medium text-lg">{dateLabel}</div>
           <StatusBadge
             className={cn(
               "mt-1 bg-white/50",

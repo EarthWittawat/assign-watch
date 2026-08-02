@@ -18,21 +18,28 @@ interface StorageItemLike<T> {
 export function useStorageState<T>(item: StorageItemLike<T>) {
   const [value, setValue] = useState<T>(item.fallback);
 
+  // `unwatch` is returned as the cleanup, but the rule flags every `watch` call.
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- false positive
   useEffect(() => {
-    let active = true;
-    item.getValue().then((stored) => {
-      if (active && stored != null) {
-        setValue(stored);
-      }
-    });
-
     const unwatch = item.watch((newValue) => {
       setValue(newValue ?? item.fallback);
     });
+    return unwatch;
+  }, [item]);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      const stored = await item.getValue();
+      if (active && stored !== null && stored !== undefined) {
+        setValue(stored);
+      }
+    };
+    void load();
 
     return () => {
       active = false;
-      unwatch();
     };
   }, [item]);
 

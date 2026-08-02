@@ -1,6 +1,6 @@
 import { Layers } from "lucide-react";
-import { i18n } from "#imports";
 
+import { i18n } from "#imports";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,15 +23,15 @@ interface AssignmentGroupProps {
   onGroupChange: (groupState: GroupState) => void;
 }
 
+const groupOptions: { value: GroupOption; label: string }[] = [
+  { label: i18n.t("group_by_class"), value: "class" },
+  { label: i18n.t("group_by_due_date"), value: "dueDate" },
+];
+
 export function AssignmentGroup({
   groupState,
   onGroupChange,
 }: AssignmentGroupProps) {
-  const groupOptions: { value: GroupOption; label: string }[] = [
-    { value: "class", label: i18n.t("group_by_class") },
-    { value: "dueDate", label: i18n.t("group_by_due_date") },
-  ];
-
   const handleGroupChange = (value: GroupOption) => {
     onGroupChange({
       groupBy: value,

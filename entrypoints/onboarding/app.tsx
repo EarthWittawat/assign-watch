@@ -1,11 +1,7 @@
-import {
-  Bell,
-  BookCheck,
-  ChevronRight,
-  Languages,
-  type LucideIcon,
-} from "lucide-react";
+import { Bell, BookCheck, ChevronRight, Languages } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { browser } from "wxt/browser";
+
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -46,10 +42,10 @@ function App() {
         </p>
 
         <div className="mx-auto mb-8 space-y-3">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <div
               className="flex items-center gap-3 rounded-lg bg-card/50 p-3 text-left text-sm"
-              key={index}
+              key={feature.text}
             >
               <div className="rounded-lg bg-muted p-2">
                 <feature.icon className="size-5 shrink-0" />

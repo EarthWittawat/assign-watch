@@ -1,9 +1,8 @@
 import type { ClassInfo } from "@/types";
 
 export function scrapeUserId() {
-  const userId = document
-    .querySelector("[data-userid]")
-    ?.getAttribute("data-userid");
+  const userId =
+    document.querySelector<HTMLElement>("[data-userid]")?.dataset.userid;
   return userId;
 }
 
@@ -14,14 +13,13 @@ export function scrapeClassCards() {
   );
   const classesInfo: ClassInfo[] = [];
 
-  for (let i = 0; i < classCards.length; i++) {
-    const cardName = classCards[i].getAttribute("name");
+  for (const [i, cardElement] of classCards.entries()) {
+    const cardName = cardElement.getAttribute("name");
     const classId = cardName?.split("-")[1];
     if (!classId) {
       continue;
     }
 
-    const cardElement = classCards[i];
     const nextElement = cardElement.nextElementSibling;
 
     if (nextElement?.tagName === "UL") {
@@ -45,11 +43,11 @@ export function scrapeClassCards() {
       cardFooter?.querySelector("span:nth-child(2) > p.h5")?.textContent ?? "";
 
     classesInfo.push({
-      id: Number(classId),
-      title: classTitle,
       description: classDescription,
+      id: Number(classId),
       section: classSection,
       semester: classSemester,
+      title: classTitle,
     });
   }
   return classesInfo;

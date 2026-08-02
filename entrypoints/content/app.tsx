@@ -1,6 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { Calendar, LayoutList } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { i18n } from "#imports";
 import { AssignmentFilters } from "@/components/assignment-filters";
 import { AssignmentGroup } from "@/components/assignment-group";
@@ -44,8 +45,15 @@ function navigateToClassPage() {
   window.location.href = "/class";
 }
 
+function shouldOpenDialogOnMount() {
+  return (
+    window.location.pathname === "/class" &&
+    sessionStorage.getItem("shouldOpenDialog") === "true"
+  );
+}
+
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(shouldOpenDialogOnMount);
   const [activeTab, setActiveTab] = useState<"list" | "calendar">("list");
 
   const [hiddenClasses] = useStorageState(hiddenClassesStorage);
@@ -55,40 +63,32 @@ function App() {
   const [groupState, setGroupState] = useStorageState(groupStorage);
 
   useEffect(() => {
-    const shouldOpenDialog =
-      window.location.pathname === "/class" &&
-      sessionStorage.getItem("shouldOpenDialog") === "true";
-
-    if (shouldOpenDialog) {
-      setIsModalOpen(true);
-      sessionStorage.removeItem("shouldOpenDialog");
-    }
+    sessionStorage.removeItem("shouldOpenDialog");
   }, []);
 
   useEffect(() => {
-    let button: HTMLButtonElement | null = null;
-    const targetElement = document.querySelector(
-      ".nav.navbar-nav.page-menu.flex-container.fxf-rnw"
-    );
-    if (targetElement) {
-      button = document.createElement("button");
-      button.textContent = "Assignments ✨";
-      button.className = "nav-link header-link";
-      button.style.border = "none";
-      button.style.background = "transparent";
-      button.onclick = () => {
-        if (window.location.pathname === "/class") {
-          setIsModalOpen(true);
-        } else {
-          navigateToClassPage();
-        }
-      };
-      targetElement.appendChild(button);
-    }
-    return () => {
-      if (button?.parentNode) {
-        button.parentNode.removeChild(button);
+    const button = document.createElement("button");
+    button.textContent = "Assignments ✨";
+    button.className = "nav-link header-link";
+    button.style.border = "none";
+    button.style.background = "transparent";
+
+    const handleClick = () => {
+      if (window.location.pathname === "/class") {
+        setIsModalOpen(true);
+      } else {
+        navigateToClassPage();
       }
+    };
+    button.addEventListener("click", handleClick);
+
+    document
+      .querySelector(".nav.navbar-nav.page-menu.flex-container.fxf-rnw")
+      ?.append(button);
+
+    return () => {
+      button.removeEventListener("click", handleClick);
+      button.remove();
     };
   }, []);
 
@@ -123,14 +123,14 @@ function App() {
   }, [allClassInfo]);
 
   const assignments = useQueries({
-    queries: allClassInfo.map((classInfo) => ({
-      queryKey: ["assignments", classInfo.id],
-      queryFn: () => fetchAssignments(classInfo.id),
-    })),
     combine: (results) => ({
       data: results.map((result) => result.data),
       pending: results.some((result) => result.isPending),
     }),
+    queries: allClassInfo.map((classInfo) => ({
+      queryFn: () => fetchAssignments(classInfo.id),
+      queryKey: ["assignments", classInfo.id],
+    })),
   });
 
   const applyFilters = useCallback(
@@ -146,11 +146,11 @@ function App() {
     }
 
     const items = collectAssignments({
-      data: assignments.data,
       allClassInfo,
-      hiddenClasses,
-      hiddenAssignments,
+      data: assignments.data,
       filters,
+      hiddenAssignments,
+      hiddenClasses,
     });
 
     if (items.length === 0) {

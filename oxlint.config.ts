@@ -34,4 +34,9 @@ export default defineConfig({
     ".agents/skills",
     ".claude/skills",
   ],
+  rules: {
+    "func-style": "off",
+    "react-doctor/nextjs-no-img-element": "off",
+    "react-doctor/react-compiler-no-manual-memoization": "off",
+  },
 });

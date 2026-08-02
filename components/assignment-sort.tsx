@@ -1,6 +1,6 @@
 import { ArrowDownUp } from "lucide-react";
-import { i18n } from "#imports";
 
+import { i18n } from "#imports";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,15 +27,15 @@ interface AssignmentSortProps {
   sortState: SortState;
 }
 
+const sortOptions: { value: SortOption; label: string }[] = [
+  { label: i18n.t("due_date"), value: "dueDate" },
+  { label: i18n.t("posted_date"), value: "postedDate" },
+];
+
 export function AssignmentSort({
   sortState,
   onSortChange,
 }: AssignmentSortProps) {
-  const sortOptions: { value: SortOption; label: string }[] = [
-    { value: "dueDate", label: i18n.t("due_date") },
-    { value: "postedDate", label: i18n.t("posted_date") },
-  ];
-
   const handleSortChange = (value: SortOption) => {
     onSortChange({
       ...sortState,

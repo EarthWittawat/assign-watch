@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { enUS, th } from "date-fns/locale";
 import moment from "moment/min/moment-with-locales";
+
 import { i18n } from "#imports";
 
 export function formatDateRelative(date: Date): {
@@ -8,14 +9,16 @@ export function formatDateRelative(date: Date): {
   text: string;
 } {
   moment.locale(i18n.t("@@ui_locale") === "th" ? "th" : "en");
-  return {
-    text: moment(date).fromNow(),
-    status: moment(date).isBefore(moment())
-      ? "late"
-      : moment(date).isSame(new Date(), "day")
-        ? "today"
-        : "upcoming",
-  };
+
+  const target = moment(date);
+  let status: "late" | "today" | "upcoming" = "upcoming";
+  if (target.isBefore(moment())) {
+    status = "late";
+  } else if (target.isSame(new Date(), "day")) {
+    status = "today";
+  }
+
+  return { status, text: target.fromNow() };
 }
 
 export function formatDate(date: Date, formatStr: string) {
