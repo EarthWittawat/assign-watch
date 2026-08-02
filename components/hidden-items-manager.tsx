@@ -76,7 +76,7 @@ export function HiddenItemsManager({
         <DropdownMenuGroup>
           <div className="flex items-center justify-between">
             <DropdownMenuLabel>{i18n.t("hidden_items")}</DropdownMenuLabel>
-            <Button onClick={clearAllHiddenItems} size="sm" variant="outline">
+            <Button onClick={clearAllHiddenItems} size="xs" variant="outline">
               <BrushCleaning />
               {i18n.t("clear_all")}
             </Button>
