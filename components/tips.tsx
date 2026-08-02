@@ -1,6 +1,6 @@
 import { CircleQuestionMark } from "lucide-react";
-import { i18n } from "#imports";
 
+import { i18n } from "#imports";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,

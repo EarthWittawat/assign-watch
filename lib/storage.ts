@@ -1,4 +1,5 @@
 import { storage } from "wxt/utils/storage";
+
 import type { FilterState } from "@/components/assignment-filters";
 import type { GroupState } from "@/components/assignment-group";
 import type { SortState } from "@/components/assignment-sort";
@@ -22,17 +23,17 @@ export const filtersStorage = storage.defineItem<FilterState>(
   "local:assignmentFilters",
   {
     fallback: {
-      submissionStatus: {
-        submitted: true,
-        notSubmitted: true,
-      },
       assignmentType: {
         assignment: true,
         quiz: true,
       },
       groupType: {
-        individual: true,
         group: true,
+        individual: true,
+      },
+      submissionStatus: {
+        notSubmitted: true,
+        submitted: true,
       },
     },
   }
@@ -42,8 +43,8 @@ export const sortStorage = storage.defineItem<SortState>(
   "local:assignmentSort",
   {
     fallback: {
-      sortBy: "dueDate",
       direction: "asc",
+      sortBy: "dueDate",
     },
   }
 );

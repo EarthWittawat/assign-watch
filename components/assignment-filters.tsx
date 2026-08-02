@@ -1,4 +1,5 @@
 import { Filter } from "lucide-react";
+
 import { i18n } from "#imports";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,9 +29,9 @@ export interface FilterState {
 }
 
 const VALID_KEYS: { [K in keyof FilterState]: (keyof FilterState[K])[] } = {
-  submissionStatus: ["submitted", "notSubmitted"],
   assignmentType: ["assignment", "quiz"],
   groupType: ["individual", "group"],
+  submissionStatus: ["submitted", "notSubmitted"],
 };
 
 interface AssignmentFiltersProps {
