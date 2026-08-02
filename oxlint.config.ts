@@ -29,5 +29,9 @@ const selectedJsPlugins = {
 
 export default defineConfig({
   extends: [core, react, tanstack, selectedJsPlugins],
-  ignorePatterns: core.ignorePatterns,
+  ignorePatterns: [
+    ...(core.ignorePatterns ?? []),
+    ".agents/skills",
+    ".claude/skills",
+  ],
 });
