@@ -3,6 +3,7 @@ import { Calendar, LayoutList } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { i18n } from "#imports";
+import { AssignmentExport } from "@/components/assignment-export";
 import { AssignmentFilters } from "@/components/assignment-filters";
 import { AssignmentGroup } from "@/components/assignment-group";
 import { AssignmentSort } from "@/components/assignment-sort";
@@ -202,6 +203,11 @@ function App() {
                 {activeTab === "list" ? i18n.t("todo") : i18n.t("calendar")}
               </DialogTitle>
               <div className="flex items-center gap-2">
+                <AssignmentExport
+                  allAssignments={assignments.data}
+                  allClassInfo={allClassInfo}
+                  isLoading={assignments.pending}
+                />
                 <HiddenItemsManager
                   allAssignments={assignments.data}
                   allClassInfo={allClassInfo}

@@ -48,3 +48,13 @@ go_to_current_week: Go to Current Week
 more: more
 today: Today
 tomorrow: Tomorrow
+export: Export
+export_all_assignments: Export All Assignments
+export_csv: Download CSV
+export_json: Download JSON
+calendar_export: Calendar
+export_google_calendar: Download for Google Calendar (.ics)
+export_unavailable: Assignments are still loading or unavailable.
+export_failed: Export failed. Please try again.
+download_related_files: Download Related Files
+download_files_unavailable: Open this assignment in LEB2 and use Download All Files.

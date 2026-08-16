@@ -9,7 +9,7 @@ import {
   notifiedAssignmentsStorage,
   userIdStorage,
 } from "@/lib/storage";
-import type { Activity } from "@/types";
+import type { Assignment } from "@/types";
 
 const DUE_SOON_MESSAGES = {
   "1h": "is due in less than 1 hour.",
@@ -30,7 +30,7 @@ interface NotifiedState {
   idsHour: Set<number>;
 }
 
-function notifyDueSoon(assignment: Activity, timeframe: "24h" | "1h") {
+function notifyDueSoon(assignment: Assignment, timeframe: "24h" | "1h") {
   const idSuffix = timeframe === "1h" ? "-1h" : "";
   browser.notifications.create(
     `assignwatch-${assignment.type}-${assignment.class_id}-${assignment.id}${idSuffix}`,
@@ -49,7 +49,7 @@ function notifyDueSoon(assignment: Activity, timeframe: "24h" | "1h") {
 }
 
 function reviewAssignment(
-  assignment: Activity,
+  assignment: Assignment,
   state: NotifiedState,
   now: Date
 ) {
@@ -152,7 +152,7 @@ export default defineBackground(() => {
         url: getAssignmentUrl({
           class_id: Number(classId),
           id: Number(assignmentId),
-          type: type as Activity["type"],
+          type: type as Assignment["type"],
         }),
       });
     }

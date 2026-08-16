@@ -24,6 +24,8 @@ Assign Watch aggregates all your assignments across courses, providing instant v
 
 - **Unified Dashboard:** View all assignments across courses in one place.
 - **Calendar View:** Visualize your workload with an interactive weekly or monthly calendar.
+- **Data Export:** Download every assignment with class, status, description, and file metadata as CSV or JSON.
+- **Google Calendar:** Export all deadlines as an `.ics` calendar file ready to import into Google Calendar.
 - **Notifications:** Get timely alerts for assignments that are due soon.
 - **Customizable View:** Hide or show classes or assignments you don't want to see.
 - **Quick Access:** Instantly open with keyboard shortcut (<kbd>Alt</kbd>+<kbd>A</kbd> or <kbd>Option</kbd>+<kbd>A</kbd>).

@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/context-menu";
 import { hideClass } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment as AssignmentData, ClassInfo } from "@/types";
 
 interface ClassProps {
-  assignments: Activity[];
+  assignments: AssignmentData[];
   classInfo: ClassInfo;
 }
 

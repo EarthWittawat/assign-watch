@@ -48,3 +48,13 @@ go_to_current_week: ไปยังสัปดาห์ปัจจุบัน
 more: เพิ่มเติม
 today: วันนี้
 tomorrow: พรุ่งนี้
+export: ส่งออก
+export_all_assignments: ส่งออกงานทั้งหมด
+export_csv: ดาวน์โหลด CSV
+export_json: ดาวน์โหลด JSON
+calendar_export: ปฏิทิน
+export_google_calendar: ดาวน์โหลดสำหรับ Google Calendar (.ics)
+export_unavailable: กำลังโหลดงาน หรือยังไม่มีงานให้ส่งออก
+export_failed: ส่งออกไม่สำเร็จ โปรดลองอีกครั้ง
+download_related_files: ดาวน์โหลดไฟล์ที่เกี่ยวข้อง
+download_files_unavailable: เปิดงานนี้ใน LEB2 แล้วเลือก "Download All Files"

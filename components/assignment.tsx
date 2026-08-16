@@ -6,6 +6,7 @@ import {
   CircleX,
   ClipboardList,
   Clock,
+  Download,
   EyeOff,
   Timer,
   User,
@@ -18,6 +19,7 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Separator } from "@/components/ui/separator";
@@ -27,17 +29,21 @@ import {
   getStatusBarColor,
   getSubmissionStatus,
 } from "@/lib/assignment";
+import {
+  discoverAssignmentFiles,
+  downloadAssignmentFiles,
+} from "@/lib/assignment-files";
 import { formatDate, formatDateRelative } from "@/lib/date";
 import { hideAssignment } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment as AssignmentData, ClassInfo } from "@/types";
 
 interface AssignmentProps {
-  assignment: Activity;
+  assignment: AssignmentData;
   classInfo?: ClassInfo;
 }
 
-function SubmissionStatusBadge({ assignment }: { assignment: Activity }) {
+function SubmissionStatusBadge({ assignment }: { assignment: AssignmentData }) {
   const status = getSubmissionStatus(assignment);
 
   if (status === "submitted") {
@@ -68,6 +74,31 @@ function SubmissionStatusBadge({ assignment }: { assignment: Activity }) {
 
 export function Assignment({ assignment, classInfo }: AssignmentProps) {
   const relativeDue = formatDateRelative(new Date(assignment.due_date));
+  const hasRelatedFiles = assignment.fileactivities.length > 0;
+
+  const downloadRelatedFiles = () => {
+    const assignmentWindow = window.open(
+      getAssignmentUrl(assignment),
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+    const discoverAndDownload = async () => {
+      try {
+        const result = await discoverAssignmentFiles(assignment);
+        if (result.status === "ok") {
+          if (result.nativeDownload) {
+            assignmentWindow?.close();
+          }
+          downloadAssignmentFiles(result.files);
+        }
+      } catch {
+        // Keep native assignment page open as fallback.
+      }
+    };
+
+    void discoverAndDownload();
+  };
 
   return (
     <ContextMenu>
@@ -149,6 +180,14 @@ export function Assignment({ assignment, classInfo }: AssignmentProps) {
         }
       />
       <ContextMenuContent>
+        <ContextMenuItem
+          disabled={!hasRelatedFiles}
+          onClick={downloadRelatedFiles}
+        >
+          <Download />
+          {i18n.t("download_related_files")}
+        </ContextMenuItem>
+        <ContextMenuSeparator />
         <ContextMenuItem onClick={() => hideAssignment(assignment.id)}>
           <EyeOff />
           {i18n.t("hide_assignment")}

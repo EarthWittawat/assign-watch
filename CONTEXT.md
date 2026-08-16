@@ -44,3 +44,15 @@ These live in `lib/`, not in the menus that edit them, so that storage and the a
 ## Notification
 
 A due-soon alert raised by the background worker (`entrypoints/background.ts`) at two thresholds: 24 hours and 1 hour before the due date. Each assignment is notified at most once per threshold; the sent IDs are remembered in storage and cleared once the work is submitted or the due date passes.
+
+## Export
+
+Exports always use the complete fetched assignment set rather than the current visible view, so filters and hidden-item preferences cannot silently omit work.
+
+- CSV provides one flattened row per assignment, including class data, status, dates, LEB2 links, assignment file IDs, and submission file metadata.
+- JSON preserves the full assignment wire data alongside class data, status, and links.
+- Calendar export creates an `.ics` file with stable event IDs and deadline reminders for import into Google Calendar and other calendar apps.
+
+LEB2 currently returns assignment attachments as IDs in this request, not file bytes. Exports preserve those IDs and any submission file metadata present in the response; they do not bundle attachment binaries.
+
+Assignment context menus can also fetch the authenticated LEB2 assignment page and trigger its native attachment downloads. The extension does not guess storage URLs: if LEB2 does not expose downloadable links in that page, the assignment page remains the fallback.

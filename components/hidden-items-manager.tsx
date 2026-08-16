@@ -17,10 +17,10 @@ import {
   unhideAssignment,
   unhideClass,
 } from "@/lib/storage";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment, ClassInfo } from "@/types";
 
 interface HiddenItemsManagerProps {
-  allAssignments: (Activity[] | undefined)[];
+  allAssignments: (Assignment[] | undefined)[];
   allClassInfo: ClassInfo[];
   hiddenAssignments: number[];
   hiddenClasses: number[];
@@ -48,7 +48,7 @@ export function HiddenItemsManager({
       }
       return null;
     })
-    .filter((a): a is Activity => a !== null);
+    .filter((a): a is Assignment => a !== null);
 
   const totalHidden = hiddenClassItems.length + hiddenAssignmentItems.length;
 

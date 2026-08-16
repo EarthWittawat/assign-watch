@@ -11,10 +11,10 @@ import { getAssignmentUrl, getStatusCalendarColor } from "@/lib/assignment";
 import { formatDate } from "@/lib/date";
 import { hideAssignment } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-import type { Activity } from "@/types";
+import type { Assignment } from "@/types";
 
 interface CalendarAssignmentChipProps {
-  assignment: Activity;
+  assignment: Assignment;
   classTitle?: string;
   /** "full" adds the due time below the title; "compact" is a single line. */
   size: "compact" | "full";

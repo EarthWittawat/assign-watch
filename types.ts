@@ -16,14 +16,14 @@ export interface Activity {
   activity_group_name: null;
   activity_submission_id: number;
   activity_submission_is_late: boolean;
-  activity_submission_submitted_at: Activitysubmissionsubmittedat;
+  activity_submission_submitted_at: ActivitySubmissionSubmittedAt | null;
   adv_starred: number;
   class_id: number;
   class_user_id: number;
   count_group_member: number;
   created_at: string;
   description: string;
-  due_date: string;
+  due_date: null | string;
   due_date_exceed: boolean;
   edit_group_mode: string;
   fileactivities: number[];
@@ -41,13 +41,22 @@ export interface Activity {
   user_id: number;
 }
 
-interface Submission {
+/**
+ * An {@link Activity} that is guaranteed to have a `due_date`. `fetchAssignments`
+ * drops activities without one, so every assignment shown, notified, or exported
+ * is of this narrowed shape.
+ */
+export type Assignment = Activity & {
+  due_date: string;
+};
+
+export interface Submission {
   activity_id: number;
   created_at: string;
   deleted_at: null;
   description: string;
   description_file_id: null | number;
-  file_activity_submissions?: Fileactivitysubmission[];
+  file_activity_submissions?: FileActivitySubmission[];
   group_id: null;
   id: number;
   is_submitted: number;
@@ -57,7 +66,7 @@ interface Submission {
   user_id: number;
 }
 
-interface Fileactivitysubmission {
+export interface FileActivitySubmission {
   activity_id: number;
   created_at: string;
   deleted_at: null;
@@ -73,7 +82,13 @@ interface Fileactivitysubmission {
   user_id: number;
 }
 
-interface Activitysubmissionsubmittedat {
+export interface AssignmentFile {
+  downloadUrl: string;
+  fileId: number;
+  name: string;
+}
+
+export interface ActivitySubmissionSubmittedAt {
   date: string;
   timezone: string;
   timezone_type: number;

@@ -6,10 +6,10 @@ import { StatusBadge } from "@/components/status-badge";
 import { getRelativeStatusColor } from "@/lib/assignment";
 import { formatDate, formatDateRelative } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment as AssignmentData, ClassInfo } from "@/types";
 
 interface DateGroupProps {
-  assignments: Activity[];
+  assignments: AssignmentData[];
   classInfoMap: Map<number, ClassInfo>;
   date: string;
 }

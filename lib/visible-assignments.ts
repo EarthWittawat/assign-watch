@@ -1,13 +1,13 @@
 import { isSubmitted } from "@/lib/assignment";
 import type { FilterState } from "@/lib/preferences";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment, ClassInfo } from "@/types";
 
 export interface VisibleAssignment {
-  assignment: Activity;
+  assignment: Assignment;
   classInfo: ClassInfo;
 }
 
-export function passesFilters(assignment: Activity, filters: FilterState) {
+export function passesFilters(assignment: Assignment, filters: FilterState) {
   const submitted = isSubmitted(assignment);
   if (submitted && !filters.submissionStatus.submitted) {
     return false;
@@ -36,13 +36,13 @@ export function passesFilters(assignment: Activity, filters: FilterState) {
 }
 
 /** Past its due date and already handed in — nothing left to do. */
-export function isSettled(assignment: Activity) {
+export function isSettled(assignment: Assignment) {
   return assignment.due_date_exceed && isSubmitted(assignment);
 }
 
 interface VisibleAssignmentsParams {
   allClassInfo: ClassInfo[];
-  data: (Activity[] | undefined)[];
+  data: (Assignment[] | undefined)[];
   filters: FilterState;
   hiddenAssignments: number[];
   hiddenClasses: number[];

@@ -1,4 +1,4 @@
-import type { Activity } from "@/types";
+import type { Assignment } from "@/types";
 
 export type Status =
   | "submitted"
@@ -7,7 +7,7 @@ export type Status =
   | "submitted_late"
   | "quiz_not_submitted";
 
-export function getSubmissionStatus(assignment: Activity): Status {
+export function getSubmissionStatus(assignment: Assignment): Status {
   if (assignment.activity_submission_id) {
     if (assignment.activity_submission_is_late) {
       return "submitted_late";
@@ -24,13 +24,13 @@ export function getSubmissionStatus(assignment: Activity): Status {
 }
 
 /** Excludes `quiz_not_submitted` — answered but never finalised, so still to do. */
-export function isSubmitted(assignment: Activity) {
+export function isSubmitted(assignment: Assignment) {
   const status = getSubmissionStatus(assignment);
   return status === "submitted" || status === "submitted_late";
 }
 
 export function getAssignmentUrl(
-  assignment: Pick<Activity, "type" | "class_id" | "id">
+  assignment: Pick<Assignment, "type" | "class_id" | "id">
 ) {
   const typePath = assignment.type === "ASM" ? "activity" : "quiz";
   return `https://app.leb2.org/class/${assignment.class_id}/${typePath}/${assignment.id}`;
@@ -44,7 +44,7 @@ const STATUS_BAR_COLOR: Partial<Record<Status, string>> = {
   submitted: "after:bg-green-500/70",
 };
 
-export function getStatusBarColor(assignment: Activity) {
+export function getStatusBarColor(assignment: Assignment) {
   return STATUS_BAR_COLOR[getSubmissionStatus(assignment)];
 }
 
@@ -62,7 +62,7 @@ const STATUS_CALENDAR_COLOR: Partial<Record<Status, string>> = {
     "border-orange-200 bg-orange-100 text-orange-700 hover:bg-orange-200 [&>div:first-child]:text-orange-700 [&>div:last-child]:text-orange-700/80",
 };
 
-export function getStatusCalendarColor(assignment: Activity) {
+export function getStatusCalendarColor(assignment: Assignment) {
   return STATUS_CALENDAR_COLOR[getSubmissionStatus(assignment)];
 }
 

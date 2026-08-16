@@ -2,24 +2,27 @@ import { isSameDay } from "date-fns";
 
 import type { SortState } from "@/lib/preferences";
 import type { VisibleAssignment } from "@/lib/visible-assignments";
-import type { Activity, ClassInfo } from "@/types";
+import type { Assignment, ClassInfo } from "@/types";
 
 export interface ClassGroup {
-  assignments: Activity[];
+  assignments: Assignment[];
   classInfo: ClassInfo;
 }
 
 export interface DateGroupEntry {
-  assignments: Activity[];
+  assignments: Assignment[];
   date: string;
 }
 
 export interface DayEntry {
-  assignments: Activity[];
+  assignments: Assignment[];
   day: Date;
 }
 
-export function sortAssignments(assignments: Activity[], sortState: SortState) {
+export function sortAssignments(
+  assignments: Assignment[],
+  sortState: SortState
+) {
   const field = sortState.sortBy === "postedDate" ? "start_date" : "due_date";
   return assignments.toSorted((a, b) => {
     const comparison =
@@ -58,7 +61,7 @@ export function groupByDueDate(
     sortState
   );
 
-  const groups = new Map<string, Activity[]>();
+  const groups = new Map<string, Assignment[]>();
   for (const assignment of sorted) {
     const [dateKey] = new Date(assignment.due_date).toISOString().split("T");
     const bucket = groups.get(dateKey);
@@ -81,7 +84,7 @@ export function groupByDay(
   items: VisibleAssignment[],
   days: Date[]
 ): DayEntry[] {
-  const buckets = new Map<number, Activity[]>(days.map((day) => [+day, []]));
+  const buckets = new Map<number, Assignment[]>(days.map((day) => [+day, []]));
 
   for (const { assignment } of items) {
     const dueDate = new Date(assignment.due_date);
